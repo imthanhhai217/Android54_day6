@@ -1,22 +1,21 @@
 package com.devpro.android54_day6.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.devpro.android54_day6.R;
+import com.devpro.android54_day6.constant.Constant;
 import com.devpro.android54_day6.intefaces.IAuthenticationView;
 import com.devpro.android54_day6.models.UserModel;
 import com.devpro.android54_day6.presenter.AuthenticationPresenter;
+import com.devpro.android54_day6.utils.PrefManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IAuthenticationView {
 
@@ -32,8 +31,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         initView();
         authenticationPresenter = new AuthenticationPresenter(this);
+
+
     }
 
     private void initView() {
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
+
+        edtUserName.setText(getSavedUserName());
 
         btnLogin.setOnClickListener(this);
         btnRegister.setOnClickListener(this);
@@ -52,7 +56,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnLogin:
                 String userName = edtUserName.getText().toString();
                 String passwords = edtPassword.getText().toString();
-                login(userName,passwords);
+
+                saveUserName(userName);
+
+                login(userName, passwords);
                 break;
             case R.id.btnRegister:
                 String userName2 = edtUserName.getText().toString();
@@ -66,6 +73,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
         }
+    }
+
+    private void saveUserName(String userName) {
+        PrefManager.saveString(Constant.USER_NAME_KEY,userName);
+    }
+
+    private String getSavedUserName(){
+        return PrefManager.getString(Constant.USER_NAME_KEY);
     }
 
 
@@ -98,6 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onRegisterError(String error) {
-        Toast.makeText(this, "Register error : "+error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Register error : " + error, Toast.LENGTH_SHORT).show();
     }
 }
